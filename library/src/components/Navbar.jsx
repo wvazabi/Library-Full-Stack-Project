@@ -14,11 +14,11 @@ import { Link } from 'react-router-dom';
 import PetsIcon from '@mui/icons-material/BookTwoTone';
 
 const pages = [
-    {route: 'book', title: 'Kitap'},
-    {route: 'category', title: 'Kategori'},
-    {route: 'publisher', title: 'Yayıncı'},
-    {route: 'author', title: 'Yazar'},
-    {route: 'book-borrowing', title: 'Kitap Alma'},
+    {route: 'book', title: 'Book'},
+    {route: 'category', title: 'Category'},
+    {route: 'publisher', title: 'Publisher'},
+    {route: 'author', title: 'Author'},
+    {route: 'book-borrowing', title: 'Book Borrowing'},
    
 ];
 // const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -63,7 +63,7 @@ function Navbar() {
 
             }}
           >
-            KÜTÜPHANE
+            LIBLARY
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -121,7 +121,7 @@ function Navbar() {
               textDecoration: 'none',
             }}
           >
-            VET
+            Library
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page, index) => (

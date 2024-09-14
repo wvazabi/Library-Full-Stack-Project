@@ -1,198 +1,177 @@
-import axios from 'axios'
-import { useState, useEffect } from 'react'
-import './publisher.css'
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import './publisher.css';
 
 function Publisher() {
-  const [availableDates, setAvailableDates] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [update, setUpdate] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [newAvailableDate, setNewAvailableDate] = useState({
-    workDay: "",
-    doctorId: "",
-  })
+    const [publishers, setPublishers] = useState([]);
+    const [update, setUpdate] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [newPublisher, setNewPublisher] = useState({
+        name: "",
+        establishmentYear: "",  // Change to year type
+        address: "",
+    });
 
-  const [updateAvailableDate, setUpdateAvailableDate] = useState({
-    workDay: "",
-    doctorId: "",
-  })
-    
-  
+    const [updatePublisher, setUpdatePublisher] = useState({
+        id: null,
+        name: "",
+        establishmentYear: "",
+        address: "",
+    });
 
-  useEffect(() => {
-    axios
-    .get(import.meta.env.VITE_APP_BASEURL + "api/v1/available-dates")
-    .then((res) => setAvailableDates(res.data.content))
-    .then(() => console.log(availableDates))
+    // Generate a list of years for the year picker
+    const currentYear = new Date().getFullYear();
+    const years = Array.from({ length: 50 }, (_, index) => currentYear - index);
 
-    axios
-    .get(import.meta.env.VITE_APP_BASEURL + "api/v1/doctors")
-    .then((res) => setDoctors(res.data.content))
-    .then(() => setUpdate(false))
-  }, [update])
+    useEffect(() => {
+        axios
+            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers")
+            .then((res) => setPublishers(res.data.content))
+            .then(() => setUpdate(false));
+    }, [update]);
 
-  const handleNewAvailableDateInputChange = (e) => {
-    const { name, value} = e.target;
-    setNewAvailableDate((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
+    const handleNewPublisherInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewPublisher((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-  const handleAddNewAvailableDate = () => {
-    axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/available-dates", newAvailableDate)
-    // .then((res) => console.log(res))
-    .then(() => setUpdate(true) )
-    .then(setNewAvailableDate({
-      workDay: "",
-      doctorId: "",
-    }))
-  }
+    const handleAddNewPublisher = () => {
+        axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers", newPublisher)
+            .then(() => setUpdate(true))
+            .then(() => setNewPublisher({
+                name: "",
+                establishmentYear: "",
+                address: "",
+            }));
+    };
 
-  const handleDeleteInput = (e) => {
-    const {id} = e.target
-    axios
-    .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/available-dates/${id}`)
-    .then(() => setUpdate(true))
-  }
+    const handleDeletePublisher = (id) => {
+        axios
+            .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/publishers/${id}`)
+            .then(() => setUpdate(true));
+    };
 
-  const handleUpdateInput = (e) => {
-    const id = e.target.id;
-    setIsUpdating(true)
-    setUpdateAvailableDate(availableDates.find((date) => date.id == id))
-  }
+    const handleUpdatePublisher = (id) => {
+        setIsUpdating(true);
+        setUpdatePublisher(publishers.find((pub) => pub.id === id));
+    };
 
-  const handleUpdateAvailableDateInputChange = (e) => {
-    const  { name, value  }= e.target
-    setUpdateAvailableDate((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
+    const handleUpdatePublisherInputChange = (e) => {
+        const { name, value } = e.target;
+        setUpdatePublisher((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-  const handleAddNewAvailableDateBtn = (e) => {
-    const { id } = updateAvailableDate
-    axios
-    .put(`${import.meta.env.VITE_APP_BASEURL} + api/v1/available-dates/${id}`, updateAvailableDate)
-    .then(() => setUpdate(true))
-    .then(() => setUpdateAvailableDate({
-      workDay: "",
-      doctorId: ""
-    }))
-    .then(() => setIsUpdating(false))
-  }
-  
-  const handleSearchByDoctorName = (value) => {
-    if(value == ''){
-      setUpdate(true)
-    } else {
-      const searchedByDoctor = availableDates.filter((date) => date.doctor.name.toLowerCase().includes(value))
-      setAvailableDates(searchedByDoctor);
-    }
-  }
+    const handleUpdatePublisherBtn = () => {
+        const { id } = updatePublisher;
+        axios
+            .put(`${import.meta.env.VITE_APP_BASEURL}api/v1/publishers/${id}`, updatePublisher)
+            .then(() => setUpdate(true))
+            .then(() => setUpdatePublisher({
+                id: null,
+                name: "",
+                establishmentYear: "",
+                address: "",
+            }))
+            .then(() => setIsUpdating(false));
+    };
 
+    return (
+        <>
+            <div>
+                <h3>Add New Publisher</h3>
+                <input
+                    type="text"
+                    placeholder='Name'
+                    name='name'
+                    value={newPublisher.name}
+                    onChange={handleNewPublisherInputChange}
+                />
+                <select
+                    name='establishmentYear'
+                    value={newPublisher.establishmentYear}
+                    onChange={handleNewPublisherInputChange}
+                >
+                    <option value="">Select Year</option>
+                    {years.map((year) => (
+                        <option key={year} value={year}>
+                            {year}
+                        </option>
+                    ))}
+                </select>
+                <input
+                    type="text"
+                    placeholder='Address'
+                    name='address'
+                    value={newPublisher.address}
+                    onChange={handleNewPublisherInputChange}
+                />
+                <button onClick={handleAddNewPublisher}>Add Publisher</button>
 
+                {isUpdating &&
+                    <div>
+                        <h4>Update Publisher</h4>
+                        <input
+                            type="text"
+                            placeholder='Name'
+                            name='name'
+                            value={updatePublisher.name}
+                            onChange={handleUpdatePublisherInputChange}
+                        />
+                        <select
+                            name='establishmentYear'
+                            value={updatePublisher.establishmentYear}
+                            onChange={handleUpdatePublisherInputChange}
+                        >
+                            <option value="">Select Year</option>
+                            {years.map((year) => (
+                                <option key={year} value={year}>
+                                    {year}
+                                </option>
+                            ))}
+                        </select>
+                        <input
+                            type="text"
+                            placeholder='Address'
+                            name='address'
+                            value={updatePublisher.address}
+                            onChange={handleUpdatePublisherInputChange}
+                        />
+                        <button onClick={handleUpdatePublisherBtn}>Update Publisher</button>
+                    </div>
+                }
+            </div>
 
-  return (
-    <>
-
-      <div>
-        <h3>Search By Doctor Name</h3>
-        <input 
-        type="text"
-        placeholder='Search by Doctor Name'
-        onChange={(e) => handleSearchByDoctorName(e.target.value)}
-        />
-      </div>
-      <div className='add-and-update-bar'>
-        <h2>Add New AvailableDate</h2>
-        <input 
-        type="date"
-        placeholder='Available Date'
-        name='workDay'
-        value={newAvailableDate.workDay}
-        onChange={handleNewAvailableDateInputChange}
-        />
-        <select 
-        name="doctorId" 
-        onChange={handleNewAvailableDateInputChange}>
-          <option value={newAvailableDate.doctorId || ""}>Select Doctor</option>
-          {doctors.map((doctor) => (
-            <option key={doctor.id} value={doctor.id}>
-              {doctor.name}
-            </option>
-          ))}
-        </select>
-      
-        <button onClick={handleAddNewAvailableDate}> Add AvailableDate</button>
-      
-
-    
-        {isUpdating &&
-        <div>
-          <div>
-            <h4>Update AvailableDate</h4>
-          </div>
-          <input 
-          type="text"
-          placeholder='Available Date'
-          name='workDay'
-          value={updateAvailableDate.workDay}
-          onChange={handleUpdateAvailableDateInputChange}
-          />
-
-          <select name="doctorId" >
-            <option value={newAvailableDate.doctorId || ""}>Select Doctor</option>
-            {doctors.map((doctor) => (
-              <option key={doctor.id} value={doctor.id}>
-                {doctor.name}
-              </option>
-            ))}
-          </select>
-        
-          
-          <button onClick={handleAddNewAvailableDateBtn}> Update AvailableDate</button>
-        </div>
-        }
-      </div>
-      
-
-      <table>
-        <thead>
-          <tr>
-            <th>Available Date</th>
-            <th>Doctor Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {availableDates.map((date, index) => (
-            <tr key={index}>
-              <td>{date.workDay}</td>
-              <td>{date.doctor.name}</td>
-              <button id={date.id} onClick={handleDeleteInput}>DELETE</button>
-              <button id={date.id} onClick={handleUpdateInput}>UPDATE</button>
-            </tr>
-          ))}
-          <tr></tr>
-
-        </tbody>
-      </table>
-
-{/* 
-      {availableDates?.map((date) => (
-        <div key={date.id}>
-          <li>
-            {date.workDay} - {date.doctor.name} - 
-            <span id={date.id} onClick={handleDeleteInput}>DELETE</span> - 
-            <span id={date.id} onClick={handleUpdateInput}>UPDATE</span>
-          </li>
-
-        </div>
-      ))
-      
-      } */}
-    </>
-  )
+            <table>
+                <thead>
+                    <tr>
+                        <th>Publisher Name</th>
+                        <th>Establishment Year</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {publishers.map((publisher) => (
+                        <tr key={publisher.id}>
+                            <td>{publisher.name}</td>
+                            <td>{publisher.establishmentYear}</td>
+                            <td>{publisher.address}</td>
+                            <td>
+                                <button onClick={() => handleDeletePublisher(publisher.id)}>DELETE</button>
+                                <button onClick={() => handleUpdatePublisher(publisher.id)}>UPDATE</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </>
+    );
 }
 
 export default Publisher;
