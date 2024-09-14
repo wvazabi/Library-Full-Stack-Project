@@ -1,27 +1,35 @@
 .home-container {
-    height: calc(100vh - 70px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    position: relative;
+    width: 0;
+    height: 0;
+    border-left: 500px solid transparent; /* Üçgenin sol kenarı */
+    border-right: 500px solid transparent; /* Üçgenin sağ kenarı */
+    border-bottom: 600px solid #4caf50; /* Üçgenin rengi ve alt kenarı */
     margin: auto;
-    background-image: linear-gradient(321deg,#4caf50,#4caf50);
-    color: brown;
+    margin-top: 8%;
+}
+
+.content-container {
+    position: fixed;
+    top: 58%; /* Üçgenin altına doğru hizalar */
+    left: 48%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
 }
 
 .home-heading {
-    padding: 20px;
-    
+    font-size: 24px;
+    font-weight: bold;
+    color: darkred;
 }
 
 .home-page-button button {
-    background-image: linear-gradient(321deg,#bcbbb3,#ce9e0e);
+    background-color: darkorange;
     border-radius: 5px;
-    margin-top: 20px;
     padding: 15px;
     cursor: pointer;
-    color:  brown;
+    color: darkred;
     font-size: large;
     font-weight: 600;
-
 }

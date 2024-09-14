@@ -139,21 +139,21 @@ function Book() {
         <h2>Add New Book</h2>
         <input
           type="text"
-          placeholder='name'
+          placeholder='Name'
           name="name"
           value={newBook.name}
           onChange={handleNewBookInputChange}
         />
         <input
           type="number"
-          placeholder='publicationYear'
+          placeholder='Publication Year'
           name="publicationYear"
           value={newBook.publicationYear}
           onChange={handleNewBookInputChange}
         />
         <input
           type="number"
-          placeholder='stock'
+          placeholder='Stock'
           name="stock"
           value={newBook.stock}
           onChange={handleNewBookInputChange}
@@ -174,16 +174,14 @@ function Book() {
             </option>
           ))}
         </select>
-        <select name="category" onChange={handleSelectChange}>
-          <option value="">Select Category</option>
+        <select multiple name="categories" onChange={handleSelectChange}>
+          <option value="">Select Categories</option>
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>
           ))}
         </select>
-        
-      
         <button onClick={handleAddNewBook}>Add Book</button>
 
         {isUpdating &&
@@ -191,30 +189,30 @@ function Book() {
             <h2>Update Book</h2>
             <input
               type="text"
-              placeholder='name'
+              placeholder='Name'
               name="name"
               value={updateBook.name}
               onChange={handleUpdateBookInputChange}
             />
             <input
               type="number"
-              placeholder='publicationYear'
+              placeholder='Publication Year'
               name="publicationYear"
               value={updateBook.publicationYear}
               onChange={handleUpdateBookInputChange}
             />
             <input
               type="number"
-              placeholder='stock'
+              placeholder='Stock'
               name="stock"
               value={updateBook.stock}
               onChange={handleUpdateBookInputChange}
             />
-            <select name="author" value={updateBook.author.id} disabled>
-              <option value={updateBook.author.id}>{updateBook.author.name}</option>
+            <select name="author" value={updateBook.author?.id} disabled>
+              <option value={updateBook.author?.id}>{updateBook.author?.name}</option>
             </select>
-            <select name="publisher" value={updateBook.publisher.id} disabled>
-              <option value={updateBook.publisher.id}>{updateBook.publisher.name}</option>
+            <select name="publisher" value={updateBook.publisher?.id} disabled>
+              <option value={updateBook.publisher?.id}>{updateBook.publisher?.name}</option>
             </select>
             <select multiple name="categories" value={updateBook.categories.map(c => c.id)} disabled>
               {categories.map((category) => (
@@ -248,7 +246,7 @@ function Book() {
               <td>{book.stock}</td>
               <td>{book.author.name}</td>
               <td>{book.publisher.name}</td>
-              <td>{book.categoryList.map(category => category.name).join(', ')}</td>
+              <td>{book.categories.map(category => category.name).join(', ')}</td>
               <td>
                 <button id={book.id} onClick={handleDeleteInput}>DELETE</button>
                 <button id={book.id} onClick={handleUpdateInput}>UPDATE</button>

@@ -6,12 +6,10 @@ function Category() {
     const [update, setUpdate] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
     const [search, setSearch] = useState('');
-
     const [newCategory, setNewCategory] = useState({
         name: "",
         description: "",
     });
-
     const [updateCategory, setUpdateCategory] = useState({
         id: null,
         name: "",
@@ -20,9 +18,15 @@ function Category() {
 
     useEffect(() => {
         axios
-            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories")
+            .get(import.meta.env.VITE_APP_BASEURL + "v1/categories", {
+                params: {
+                    page: 0, // başlangıç sayfası
+                    pageSize: 10 // sayfa boyutu
+                }
+            })
             .then((res) => setCategories(res.data.content))
-            .then(() => setUpdate(false));
+            .catch((error) => console.error('Error fetching categories:', error))
+            .finally(() => setUpdate(false));
     }, [update]);
 
     const handleNewCategoryInputChange = (e) => {
@@ -34,15 +38,17 @@ function Category() {
     };
 
     const handleAddNewCategory = () => {
-        axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", newCategory)
+        axios.post(import.meta.env.VITE_APP_BASEURL + "v1/categories", newCategory)
             .then(() => setUpdate(true))
-            .then(() => setNewCategory({ name: "", description: "" }));
+            .catch((error) => console.error('Error adding category:', error))
+            .finally(() => setNewCategory({ name: "", description: "" }));
     };
 
     const handleDeleteCategory = (id) => {
         axios
-            .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/categories/${id}`)
-            .then(() => setUpdate(true));
+            .delete(import.meta.env.VITE_APP_BASEURL + `v1/categories/${id}`)
+            .then(() => setUpdate(true))
+            .catch((error) => console.error('Error deleting category:', error));
     };
 
     const handleUpdateCategory = (id) => {
@@ -60,10 +66,13 @@ function Category() {
 
     const handleUpdateCategoryBtn = () => {
         axios
-            .put(`${import.meta.env.VITE_APP_BASEURL}api/v1/categories/${updateCategory.id}`, updateCategory)
+            .put(import.meta.env.VITE_APP_BASEURL + "v1/categories", updateCategory)
             .then(() => setUpdate(true))
-            .then(() => setUpdateCategory({ id: null, name: "", description: "" }))
-            .then(() => setIsUpdating(false));
+            .catch((error) => console.error('Error updating category:', error))
+            .finally(() => {
+                setUpdateCategory({ id: null, name: "", description: "" });
+                setIsUpdating(false);
+            });
     };
 
     const handleSearchCategory = (value) => {
