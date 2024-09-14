@@ -5,8 +5,8 @@
     align-items: center;
     justify-content: center;
     margin: auto;
-    background-image: linear-gradient(321deg,#fff,#1976d2);
-    color: white;
+    background-image: linear-gradient(321deg,#4caf50,#4caf50);
+    color: brown;
 }
 
 .home-heading {
@@ -15,12 +15,12 @@
 }
 
 .home-page-button button {
-    background-image: linear-gradient(321deg,#1976d2,#193fb1);
+    background-image: linear-gradient(321deg,#6a5b0b,#ce9e0e);
     border-radius: 5px;
     margin-top: 20px;
     padding: 15px;
     cursor: pointer;
-    color: white;
+    color:  brown;
     font-size: large;
     font-weight: 600;
 

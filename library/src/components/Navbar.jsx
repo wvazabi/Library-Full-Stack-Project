@@ -43,7 +43,7 @@ function Navbar() {
   // };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ backgroundColor: '#4caf50' }}>
       <Container maxWidth="md">
         <Toolbar disableGutters>
           <PetsIcon fontSize='large' sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -58,8 +58,9 @@ function Navbar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: 'brown',
               textDecoration: 'none',
+
             }}
           >
             KÜTÜPHANE
@@ -72,7 +73,7 @@ function Navbar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="inherit"
+              color="brown"
             >
               <MenuIcon />
             </IconButton>
@@ -116,7 +117,7 @@ function Navbar() {
               fontFamily: 'monospace',
               fontWeight: 700,
               letterSpacing: '.3rem',
-              color: 'inherit',
+              color: 'brown',
               textDecoration: 'none',
             }}
           >
@@ -127,7 +128,7 @@ function Navbar() {
               <Button
                 key={index}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ my: 2, color: 'brown', display: 'block' }}
               >
                 <Typography textAlign="center">
                         <Link to={page.route}> {page.title} </Link>
