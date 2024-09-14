@@ -1,316 +1,264 @@
-import axios from 'axios'
-import { useState, useEffect } from 'react'
-import './book.css'
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import './book.css';
 
 function Book() {
-  const [animals, setAnimals] = useState([]);
-  const [customers, setCustomers] = useState([])
+  const [books, setBooks] = useState([]);
+  const [authors, setAuthors] = useState([]);
+  const [publishers, setPublishers] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [update, setUpdate] = useState(false);
-  const [isUpdating, setIsUpdating] = useState(false)
-  const [newAnimal, setNewAnimal] = useState({
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [newBook, setNewBook] = useState({
     name: "",
-    species: "",
-    breed: "",
-    gender: "",
-    dateOfBirth: "",
-    colour: "",
-    customer: ""
-  })
-  const [updateAnimal, setUpdateAnimal] = useState({
+    publicationYear: "",
+    stock: "",
+    author: "",
+    publisher: "",
+    categories: []
+  });
+  const [updateBook, setUpdateBook] = useState({
     name: "",
-    species: "",
-    breed: "",
-    gender: "",
-    dateOfBirth: "",
-    colour: "",
-    customer: ""
-  })
+    publicationYear: "",
+    stock: "",
+    author: "",
+    publisher: "",
+    categories: []
+  });
 
   useEffect(() => {
     axios
-    .get(import.meta.env.VITE_APP_BASEURL + "api/v1/animals")
-    .then((res) => setAnimals(res.data.content));
+      .get(import.meta.env.VITE_APP_BASEURL + "api/v1/books")
+      .then((res) => setBooks(res.data.content));
 
     axios
-    .get(import.meta.env.VITE_APP_BASEURL + "api/v1/customers")
-    .then((res) => setCustomers(res.data.content))
-    .then(() => setUpdate(false))
-    
+      .get(import.meta.env.VITE_APP_BASEURL + "api/v1/authors")
+      .then((res) => setAuthors(res.data.content));
 
-  }, [update])
+    axios
+      .get(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers")
+      .then((res) => setPublishers(res.data.content));
 
-  const handleNewAnimalInputChange = (e) => {
+    axios
+      .get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories")
+      .then((res) => setCategories(res.data.content))
+      .then(() => setUpdate(false));
+  }, [update]);
+
+  const handleNewBookInputChange = (e) => {
     const { name, value } = e.target;
-    setNewAnimal((prev) => ({
+    setNewBook((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
-  const handleAddNewAnimal = () => {
+  const handleAddNewBook = () => {
     axios
-    .post(import.meta.env.VITE_APP_BASEURL + "api/v1/animals", newAnimal)
-    .then(() => setUpdate(true))
-    .then(setNewAnimal({
-      name: "",
-      species: "",
-      breed: "",
-      gender: "",
-      dateOfBirth: "",
-      colour: "",
-      customer: ""
-    }))
-  }
+      .post(import.meta.env.VITE_APP_BASEURL + "api/v1/books", newBook)
+      .then(() => setUpdate(true))
+      .then(() => setNewBook({
+        name: "",
+        publicationYear: "",
+        stock: "",
+        author: "",
+        publisher: "",
+        categories: []
+      }));
+  };
 
   const handleDeleteInput = (e) => {
-    const {id} = e.target
+    const { id } = e.target;
     axios
-    .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/animals/${id}`)
-    .then(() => setUpdate(true))
-  }
+      .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/books/${id}`)
+      .then(() => setUpdate(true));
+  };
 
   const handleUpdateInput = (e) => {
-    const {id} = e.target;
-    setIsUpdating(true)
-    setUpdateAnimal(animals.find((animal)=> animal.id == id))
-  }
+    const { id } = e.target;
+    setIsUpdating(true);
+    setUpdateBook(books.find((book) => book.id === +id));
+  };
 
   const handleSelectChange = (e) => {
     const { name, value } = e.target;
-    const obj = customers.find((customer) => customer.id === +value)
-    console.log(obj);
-    setNewAnimal({
-      ...newAnimal,
-      [name]: obj,
-    })
-  }
+    if (name === "author" || name === "publisher") {
+      setNewBook({
+        ...newBook,
+        [name]: value
+      });
+    }
+  };
 
-  const handleUpdateAnimalInputChange = (e) => {
+  const handleUpdateBookInputChange = (e) => {
     const { name, value } = e.target;
-    setUpdateAnimal((prev) => ({
+    setUpdateBook((prev) => ({
       ...prev,
       [name]: value
-    }))
-  }
-  
-  const handleUpdateAnimalBtn = (e) => {
-    const { id } = updateAnimal
+    }));
+  };
+
+  const handleUpdateBookBtn = () => {
+    const { id } = updateBook;
     axios
-    .put(import.meta.env.VITE_APP_BASEURL + `api/v1/animals/${id}`, updateAnimal)
-    .then(() => setUpdate(true))
-    .then(() => setUpdateAnimal({
-      name: "",
-      species: "",
-      breed: "",
-      gender: "",
-      dateOfBirth: "",
-      colour: "",
-      customer: ""
-    }))
-    .then(() => setIsUpdating(false))
-  }
+      .put(import.meta.env.VITE_APP_BASEURL + `api/v1/books/${id}`, updateBook)
+      .then(() => setUpdate(true))
+      .then(() => setUpdateBook({
+        name: "",
+        publicationYear: "",
+        stock: "",
+        author: "",
+        publisher: "",
+        categories: []
+      }))
+      .then(() => setIsUpdating(false));
+  };
 
-  const handleSearchAnimalByAnimalName = (value) => {
-    if(value == ''){
-      setUpdate(true)
-    } else  {
-      const searchedAnimal = animals.filter((animal) => animal.name.toLowerCase().includes(value))
-      setAnimals(searchedAnimal)
+  const handleSearchBookByName = (value) => {
+    if (value === '') {
+      setUpdate(true);
+    } else {
+      const searchedBook = books.filter((book) => book.name.toLowerCase().includes(value.toLowerCase()));
+      setBooks(searchedBook);
     }
-    
-  }
-
-  const handleSearchAnimalByCustomerName = (value) => {
-    if(value == ''){
-      setUpdate(true)
-    } else  {
-      const searchedAnimal = animals.filter((animal) => animal.customer.name.toLowerCase().includes(value))
-      setAnimals(searchedAnimal)
-    }
-  }
+  };
 
   return (
     <>
       <div className='search-bar'>
         <div>
-          <h3>Search Animal By Name</h3>
+          <h3>Search Book By Name</h3>
           <input
-          type="text"
-          placeholder='Animal Name'
-          onChange={(e) => handleSearchAnimalByAnimalName(e.target.value)}
+            type="text"
+            placeholder='Book Name'
+            onChange={(e) => handleSearchBookByName(e.target.value)}
           />
         </div>
-        <div>
-          <h3>Search Animal By Customer Name</h3>
-          <input
-          type="text"
-          placeholder='Animal Name'
-          onChange={(e) => handleSearchAnimalByCustomerName(e.target.value)}
-          />
-        </div> 
       </div>
       <div className='add-and-update-bar'>
-        <h2>Add New Animal</h2>
+        <h2>Add New Book</h2>
         <input
-        type="text"
-        placeholder='name'
-        name="name"
-        value={newAnimal.name}
-        onChange={handleNewAnimalInputChange} />
-        <input
-        type="text"
-        placeholder='species'
-        name="species"
-        value={newAnimal.species}
-        onChange={handleNewAnimalInputChange} />
-        <input
-        type="text"
-        placeholder='breed'
-        name="breed"
-        value={newAnimal.breed}
-        onChange={handleNewAnimalInputChange} />
-        <input
-        type="text"
-        placeholder='gender'
-        name="gender"
-        value={newAnimal.gender}
-        onChange={handleNewAnimalInputChange} />
-        <input
-        type="date"
-        placeholder='dateOfBirth'
-        name="dateOfBirth"
-        value={newAnimal.dateOfBirth}
-        onChange={handleNewAnimalInputChange} />
-        <input
-        type="text"
-        placeholder='colour'
-        name="colour"
-        value={newAnimal.colour}
-        onChange={handleNewAnimalInputChange} />
-
-        <select name="customer" onChange={handleSelectChange}>
-          <option value="">Select Customer</option>
-            {customers?.map((customer) =>(
-              <option key={customer.id} value={customer.id}>
-                {customer.name}
-              </option>
-            ))}
-        </select>
-
-        <button onClick={handleAddNewAnimal}>Add Animal</button>
-      
-
-        {isUpdating &&
-        <div>
-          <h2>Update Animal</h2>
-          <input
           type="text"
           placeholder='name'
           name="name"
-          value={updateAnimal.name}
-          onChange={handleUpdateAnimalInputChange} />
-          <input
-          type="text"
-          placeholder='species'
-          name="species"
-          value={updateAnimal.species}
-          onChange={handleUpdateAnimalInputChange} />
-          <input
-          type="text"
-          placeholder='breed'
-          name="breed"
-          value={updateAnimal.breed}
-          onChange={handleUpdateAnimalInputChange} />
-          <input
-          type="text"
-          placeholder='gender'
-          name="gender"
-          value={updateAnimal.gender}
-          onChange={handleUpdateAnimalInputChange} />
-          <input
-          type="date"
-          placeholder='dateOfBirth'
-          name="dateOfBirth"
-          value={updateAnimal.dateOfBirth}
-          onChange={handleUpdateAnimalInputChange} />
-          <input
-          type="text"
-          placeholder='colour'
-          name="colour"
-          value={updateAnimal.colour}
-          onChange={handleUpdateAnimalInputChange} />
-          <select name="customer" disabled>
-            <option value={updateAnimal.customer.name}>{updateAnimal.customer.name}</option>
-              {/* {customers?.map((customer) =>(
-                <option key={customer.id} value={customer.id}>
-                  {customer.name}
+          value={newBook.name}
+          onChange={handleNewBookInputChange}
+        />
+        <input
+          type="number"
+          placeholder='publicationYear'
+          name="publicationYear"
+          value={newBook.publicationYear}
+          onChange={handleNewBookInputChange}
+        />
+        <input
+          type="number"
+          placeholder='stock'
+          name="stock"
+          value={newBook.stock}
+          onChange={handleNewBookInputChange}
+        />
+        <select name="author" onChange={handleSelectChange}>
+          <option value="">Select Author</option>
+          {authors.map((author) => (
+            <option key={author.id} value={author.id}>
+              {author.name}
+            </option>
+          ))}
+        </select>
+        <select name="publisher" onChange={handleSelectChange}>
+          <option value="">Select Publisher</option>
+          {publishers.map((publisher) => (
+            <option key={publisher.id} value={publisher.id}>
+              {publisher.name}
+            </option>
+          ))}
+        </select>
+        <select name="category" onChange={handleSelectChange}>
+          <option value="">Select Category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        
+      
+        <button onClick={handleAddNewBook}>Add Book</button>
+
+        {isUpdating &&
+          <div>
+            <h2>Update Book</h2>
+            <input
+              type="text"
+              placeholder='name'
+              name="name"
+              value={updateBook.name}
+              onChange={handleUpdateBookInputChange}
+            />
+            <input
+              type="number"
+              placeholder='publicationYear'
+              name="publicationYear"
+              value={updateBook.publicationYear}
+              onChange={handleUpdateBookInputChange}
+            />
+            <input
+              type="number"
+              placeholder='stock'
+              name="stock"
+              value={updateBook.stock}
+              onChange={handleUpdateBookInputChange}
+            />
+            <select name="author" value={updateBook.author.id} disabled>
+              <option value={updateBook.author.id}>{updateBook.author.name}</option>
+            </select>
+            <select name="publisher" value={updateBook.publisher.id} disabled>
+              <option value={updateBook.publisher.id}>{updateBook.publisher.name}</option>
+            </select>
+            <select multiple name="categories" value={updateBook.categories.map(c => c.id)} disabled>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
                 </option>
-              ))} */}
-          </select>
-          <button onClick={handleUpdateAnimalBtn}>Update Animal</button>
-        </div>
-      }
-    </div>
+              ))}
+            </select>
+            <button onClick={handleUpdateBookBtn}>Update Book</button>
+          </div>
+        }
+      </div>
 
-
-    <table>
+      <table>
         <thead>
-            <tr>
-              <th>Animal Name</th>
-              <th>Animal Species</th>
-              <th>Animal Breed</th>
-              <th>Animal Gender</th>
-              <th>Animal Date of Birth</th>
-              <th>Animal Owner</th>
-            </tr>
+          <tr>
+            <th>Book Name</th>
+            <th>Publication Year</th>
+            <th>Stock</th>
+            <th>Author</th>
+            <th>Publisher</th>
+            <th>Categories</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
-
-          {animals.map((animal, index) => (
-            <tr key={index}>
-              <td>{animal.name}</td>
-              <td>{animal.species}</td>
-              <td>{animal.breed}</td>
-              <td>{animal.gender}</td>
-              <td>{animal.dateOfBirth}</td>
-              <td>{animal.customer.name}</td>
-              <button id={animal.id} onClick={handleDeleteInput}>DELETE</button>
-              <button id={animal.id} onClick={handleUpdateInput}>UPDATE</button>
+          {books.map((book) => (
+            <tr key={book.id}>
+              <td>{book.name}</td>
+              <td>{book.publicationYear}</td>
+              <td>{book.stock}</td>
+              <td>{book.author.name}</td>
+              <td>{book.publisher.name}</td>
+              <td>{book.categoryList.map(category => category.name).join(', ')}</td>
+              <td>
+                <button id={book.id} onClick={handleDeleteInput}>DELETE</button>
+                <button id={book.id} onClick={handleUpdateInput}>UPDATE</button>
+              </td>
             </tr>
-
-            ))}
-            
-        </tbody>
-    </table>
-
-    {/* name: "",
-    species: "",
-    breed: "",
-    gender: "",
-    dateOfBirth: "",
-    colour: "",
-    customer: "" */}
-      
-{/* 
-      <ul>
-
-
-          {animals.map((animal) => (
-            <div key={animal.id}>
-              <li>
-                {animal.name} - {animal.colour} - {animal.species} - 
-                {animal.customer.name} - {animal.dateOfBirth} - 
-
-                <span id={animal.id} onClick={handleDeleteInput}>DELETE</span> - 
-                <span id={animal.id} onClick={handleUpdateInput}>UPDATE</span>
-                </li>
-            </div>          
           ))}
-      </ul> */}
-
-      
+        </tbody>
+      </table>
     </>
-  )
+  );
 }
 
 export default Book;

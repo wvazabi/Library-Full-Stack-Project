@@ -2,256 +2,157 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function Category() {
-    const [doctors, setDoctors] = useState([])
-    const [update, setUpdate] = useState(false)
-    const [isUpdating, setIsUpdating] = useState(false)
-    const [search, setSearch] = useState('')
- 
+    const [categories, setCategories] = useState([]);
+    const [update, setUpdate] = useState(false);
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [search, setSearch] = useState('');
 
-
-    const [newDoctor, setNewDoctor] = useState({
+    const [newCategory, setNewCategory] = useState({
         name: "",
-        phone: "",
-        email: "",
-        address: "",
-        city: "",
-    })
+        description: "",
+    });
 
-    const [updateDoctor, setUpdateDoctor] = useState({
+    const [updateCategory, setUpdateCategory] = useState({
+        id: null,
         name: "",
-        phone: "",
-        email: "",
-        address: "",
-        city: "",
-    })
+        description: "",
+    });
 
     useEffect(() => {
         axios
-        .get(import.meta.env.VITE_APP_BASEURL + "api/v1/doctors")
-        .then((res) => setDoctors(res.data.content))
-        .then(() => setUpdate(false))
-      }, [update])
+            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories")
+            .then((res) => setCategories(res.data.content))
+            .then(() => setUpdate(false));
+    }, [update]);
 
-      const handleNewDoctorInputChange = (e) => {
-        const { name, value} = e.target;
-        setNewDoctor((prev) => ({
-          ...prev,
-          [name]: value,
-        }))
-      }
+    const handleNewCategoryInputChange = (e) => {
+        const { name, value } = e.target;
+        setNewCategory((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-      const handleAddNewDoctor = () => {
-        axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/doctors", newDoctor)
-        // .then((res) => console.log(res))
-        .then(() => setUpdate(true) )
-        .then(setNewDoctor({
-          name: "",
-          phone: "",
-          email: "",
-          address: "",
-          city: ""
-        }))
-      }
+    const handleAddNewCategory = () => {
+        axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", newCategory)
+            .then(() => setUpdate(true))
+            .then(() => setNewCategory({ name: "", description: "" }));
+    };
 
-      const handleDeleteInput = (e) => {
-        const {id} = e.target
+    const handleDeleteCategory = (id) => {
         axios
-        .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/doctors/${id}`)
-        .then(() => setUpdate(true))
-      }
+            .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/categories/${id}`)
+            .then(() => setUpdate(true));
+    };
 
-      const handleUpdateInput = (e) => {
-        const id = e.target.id;
-        setIsUpdating(true)
-        setUpdateDoctor(doctors.find((doc) => doc.id == id))
-      }
+    const handleUpdateCategory = (id) => {
+        setIsUpdating(true);
+        setUpdateCategory(categories.find((cat) => cat.id === id));
+    };
 
-      const handleUpdateDoctorInputChange = (e) => {
-        const  { name, value  }= e.target
-        setUpdateDoctor((prev) => ({
-          ...prev,
-          [name]: value,
-        }))
-      }
+    const handleUpdateCategoryInputChange = (e) => {
+        const { name, value } = e.target;
+        setUpdateCategory((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
-      const handleUpdateDoctorBtn = (e) => {
-        const { id } = updateDoctor
+    const handleUpdateCategoryBtn = () => {
         axios
-        .put(`${import.meta.env.VITE_APP_BASEURL}api/v1/doctors/${id}`, updateDoctor)
-        .then(() => setUpdate(true))
-        .then(() => setUpdateDoctor({
-          name: "",
-          phone: "",
-          email: "",
-          address: "",
-          city: ""
-        }))
-        .then(() => setIsUpdating(false))
-      }
+            .put(`${import.meta.env.VITE_APP_BASEURL}api/v1/categories/${updateCategory.id}`, updateCategory)
+            .then(() => setUpdate(true))
+            .then(() => setUpdateCategory({ id: null, name: "", description: "" }))
+            .then(() => setIsUpdating(false));
+    };
 
-      const handleSearchDoctor = (value) => {
-        if(value == ''){
-          setUpdate(true)
-        }else {
-          const searchedDoctor = doctors.filter((doctor) => doctor.name.toLowerCase().includes(value))
-          setDoctors(searchedDoctor)
+    const handleSearchCategory = (value) => {
+        if (value === '') {
+            setUpdate(true);
+        } else {
+            const searchedCategory = categories.filter((category) =>
+                category.name.toLowerCase().includes(value.toLowerCase())
+            );
+            setCategories(searchedCategory);
         }
-      }
+    };
 
+    return (
+        <>
+            <h3>Search Category</h3>
+            <input
+                type="text"
+                placeholder='Search Category'
+                onChange={(e) => handleSearchCategory(e.target.value)}
+            />
 
-  return (
-    <>
-        <h3>Search Doctor</h3>
-        <input 
-        type="text"
-        placeholder='Search Doctor'
-        onChange={(e) => handleSearchDoctor(e.target.value)}
-        />
-        
-        
-        <div className='add-and-update-bar'>
-          <div>
-            <h2>Add New Doctor</h2>
-          </div>
-          <input 
-          type="text"
-          placeholder='Name'
-          name='name'
-          value={newDoctor.name}
-          onChange={handleNewDoctorInputChange}
-          />
-          <input 
-          type="text"
-          placeholder='phone'
-          name='phone'
-          value={newDoctor.phone}
-          onChange={handleNewDoctorInputChange}
-          />
-          <input 
-          type="text"
-          placeholder='email'
-          name='email'
-          value={newDoctor.email}
-          onChange={handleNewDoctorInputChange}
-          />
-          <input 
-          type="text"
-          placeholder='address'
-          name='address'
-          value={newDoctor.address}
-          onChange={handleNewDoctorInputChange}
-          />
-          <input 
-          type="text"
-          placeholder='city'
-          name='city'
-          value={newDoctor.city}
-          onChange={handleNewDoctorInputChange}
-          />
-          <button onClick={handleAddNewDoctor}> Add Doctor</button>
-    
-        
-          {isUpdating &&
-          
-          <div>
-          
-            <div>
-              <h2>Update Doctor</h2>
+            <div className='add-and-update-bar'>
+                <div>
+                    <h2>Add New Category</h2>
+                </div>
+                <input
+                    type="text"
+                    placeholder='Name'
+                    name='name'
+                    value={newCategory.name}
+                    onChange={handleNewCategoryInputChange}
+                />
+                <input
+                    type="text"
+                    placeholder='Description'
+                    name='description'
+                    value={newCategory.description}
+                    onChange={handleNewCategoryInputChange}
+                />
+                <button onClick={handleAddNewCategory}>Add Category</button>
+
+                {isUpdating &&
+                    <div>
+                        <div>
+                            <h2>Update Category</h2>
+                        </div>
+                        <input
+                            type="text"
+                            placeholder='Name'
+                            name='name'
+                            value={updateCategory.name}
+                            onChange={handleUpdateCategoryInputChange}
+                        />
+                        <input
+                            type="text"
+                            placeholder='Description'
+                            name='description'
+                            value={updateCategory.description}
+                            onChange={handleUpdateCategoryInputChange}
+                        />
+                        <button onClick={handleUpdateCategoryBtn}>Update Category</button>
+                    </div>
+                }
             </div>
-            <input 
-            type="text"
-            placeholder='Name'
-            name='name'
-            value={updateDoctor.name}
-            onChange={handleUpdateDoctorInputChange}
-            />
-            <input 
-            type="text"
-            placeholder='phone'
-            name='phone'
-            value={updateDoctor.phone}
-            onChange={handleUpdateDoctorInputChange}
-            />
-            <input 
-            type="text"
-            placeholder='email'
-            name='email'
-            value={updateDoctor.email}
-            onChange={handleUpdateDoctorInputChange}
-            />
-            <input 
-            type="text"
-            placeholder='address'
-            name='address'
-            value={updateDoctor.address}
-            onChange={handleUpdateDoctorInputChange}
-            />
-            <input 
-            type="text"
-            placeholder='city'
-            name='city'
-            value={updateDoctor.city}
-            onChange={handleUpdateDoctorInputChange}
-            />
-            <button onClick={handleUpdateDoctorBtn}> Update Doctor</button>
-          </div>
-          }
-        </div>
 
-
-     
-        {/* <ul>
-          {filteredData.map((doctor, index) => (
-            <li key={index}> {doctor.name} - {doctor.phone}</li>
-          ) )}
-        </ul> */}
-        
-
-        <table>
-          <thead>
-            <tr>
-              <th>Doctor Name</th>
-              <th>Doctor Phone</th>
-              <th>Doctor Email</th>
-              <th>Doctor Address</th>
-              <th>Doctor City</th>
-            </tr>
-          </thead>
-          <tbody>
-            {doctors.map((doctor, index) => (
-              <tr key={index}>
-                <td>{doctor.name}</td>
-                <td>{doctor.phone}</td>
-                <td>{doctor.email}</td>
-                <td>{doctor.address}</td>
-                <td>{doctor.city}</td>
-                <button id={doctor.id} onClick={handleDeleteInput}>DELETE</button>
-                <button id={doctor.id} onClick={handleUpdateInput}>UPDATE</button>
-              </tr>
-            ))}
-            
-
-          </tbody>
-        </table>
-  
-  
-        {/* {doctors?.filter((doctor) => {
-          return search.toLowerCase() === '' ? doctor : doctor.name.toLowerCase().includes(search)
-        })
-        .map((doctor) => (
-          <div key={doctor.id}>
-            <li>
-              {doctor.name} - {doctor.phone} -{doctor.email} - {doctor.address} - {doctor.city} - 
-              <span id={doctor.id} onClick={handleDeleteInput}>DELETE</span> - 
-              <span id={doctor.id} onClick={handleUpdateInput}>UPDATE</span>
-            </li>
-  
-          </div>
-        ))
-        
-        } */}
-      </>
-  )
+            <table>
+                <thead>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {categories.map((category) => (
+                        <tr key={category.id}>
+                            <td>{category.name}</td>
+                            <td>{category.description}</td>
+                            <td>
+                                <button onClick={() => handleDeleteCategory(category.id)}>DELETE</button>
+                                <button onClick={() => handleUpdateCategory(category.id)}>UPDATE</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </>
+    );
 }
 
-export default Category
+export default Category;
