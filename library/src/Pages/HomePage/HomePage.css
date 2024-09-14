@@ -1,0 +1,27 @@
+.home-container {
+    height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    background-image: linear-gradient(321deg,#fff,#1976d2);
+    color: white;
+}
+
+.home-heading {
+    padding: 20px;
+    
+}
+
+.home-page-button button {
+    background-image: linear-gradient(321deg,#1976d2,#193fb1);
+    border-radius: 5px;
+    margin-top: 20px;
+    padding: 15px;
+    cursor: pointer;
+    color: white;
+    font-size: large;
+    font-weight: 600;
+
+}
