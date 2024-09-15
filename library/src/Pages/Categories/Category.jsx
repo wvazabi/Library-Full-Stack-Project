@@ -18,13 +18,13 @@ function Category() {
 
     useEffect(() => {
         axios
-            .get(import.meta.env.VITE_APP_BASEURL + "v1/categories", {
+            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", {
                 params: {
                     page: 0, // başlangıç sayfası
                     pageSize: 10 // sayfa boyutu
                 }
             })
-            .then((res) => setCategories(res.data.content))
+            .then((res) => setCategories(res.data.data.items)) // items içindeki verileri alıyoruz
             .catch((error) => console.error('Error fetching categories:', error))
             .finally(() => setUpdate(false));
     }, [update]);
@@ -38,7 +38,7 @@ function Category() {
     };
 
     const handleAddNewCategory = () => {
-        axios.post(import.meta.env.VITE_APP_BASEURL + "v1/categories", newCategory)
+        axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", newCategory)
             .then(() => setUpdate(true))
             .catch((error) => console.error('Error adding category:', error))
             .finally(() => setNewCategory({ name: "", description: "" }));
@@ -46,7 +46,7 @@ function Category() {
 
     const handleDeleteCategory = (id) => {
         axios
-            .delete(import.meta.env.VITE_APP_BASEURL + `v1/categories/${id}`)
+            .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/categories/${id}`)
             .then(() => setUpdate(true))
             .catch((error) => console.error('Error deleting category:', error));
     };
@@ -66,7 +66,7 @@ function Category() {
 
     const handleUpdateCategoryBtn = () => {
         axios
-            .put(import.meta.env.VITE_APP_BASEURL + "v1/categories", updateCategory)
+            .put(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", updateCategory)
             .then(() => setUpdate(true))
             .catch((error) => console.error('Error updating category:', error))
             .finally(() => {
@@ -143,15 +143,13 @@ function Category() {
                 <thead>
                     <tr>
                         <th>Category Name</th>
-                        <th>Description</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {categories.map((category) => (
-                        <tr key={category.id}>
+                    {categories.map((category, index) => (
+                        <tr key={index}>
                             <td>{category.name}</td>
-                            <td>{category.description}</td>
                             <td>
                                 <button onClick={() => handleDeleteCategory(category.id)}>DELETE</button>
                                 <button onClick={() => handleUpdateCategory(category.id)}>UPDATE</button>
