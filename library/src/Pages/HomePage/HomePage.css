@@ -11,8 +11,8 @@
 
 .content-container {
     position: fixed;
-    top: 58%; /* Üçgenin altına doğru hizalar */
-    left: 48%;
+    top: 78%; /* Üçgenin altına doğru hizalar */
+    left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
     color: white;

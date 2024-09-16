@@ -23,7 +23,8 @@ function Author() {
     useEffect(() => {
         axios
             .get(import.meta.env.VITE_APP_BASEURL + "api/v1/authors")
-            .then((res) => setAuthors(res.data.content))
+            .then((res) => setAuthors(res.data))
+            .catch((err) => console.error(err)) // Handle errors
             .then(() => setUpdate(false));
     }, [update]);
 
@@ -41,7 +42,8 @@ function Author() {
             birthDate: new Date(newAuthor.birthDate).toISOString().split('T')[0] // Format date for backend
         })
             .then(() => setUpdate(true))
-            .then(() => setNewAuthor({
+            .catch((err) => console.error(err)) // Handle errors
+            .finally(() => setNewAuthor({
                 name: "",
                 birthDate: "",
                 country: "",
@@ -51,7 +53,8 @@ function Author() {
     const handleDeleteAuthor = (id) => {
         axios
             .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/authors/${id}`)
-            .then(() => setUpdate(true));
+            .then(() => setUpdate(true))
+            .catch((err) => console.error(err)); // Handle errors
     };
 
     const handleUpdateAuthor = (id) => {
@@ -75,16 +78,20 @@ function Author() {
                 birthDate: new Date(updateAuthor.birthDate).toISOString().split('T')[0] // Format date for backend
             })
             .then(() => setUpdate(true))
-            .then(() => setUpdateAuthor({
-                id: null,
-                name: "",
-                birthDate: "",
-                country: "",
-            }))
-            .then(() => setIsUpdating(false));
+            .catch((err) => console.error(err)) // Handle errors
+            .finally(() => {
+                setUpdateAuthor({
+                    id: null,
+                    name: "",
+                    birthDate: "",
+                    country: "",
+                });
+                setIsUpdating(false);
+            });
     };
 
     const handleSearchAuthor = (value) => {
+        setSearch(value);
         if (value === '') {
             setUpdate(true);
         } else {
@@ -101,6 +108,7 @@ function Author() {
             <input
                 type="text"
                 placeholder='Search Author'
+                value={search}
                 onChange={(e) => handleSearchAuthor(e.target.value)}
             />
 
