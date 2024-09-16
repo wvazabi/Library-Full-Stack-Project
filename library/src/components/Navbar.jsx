@@ -12,6 +12,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { Link } from 'react-router-dom';
 import PetsIcon from '@mui/icons-material/BookTwoTone';
+import { brown } from '@mui/material/colors';
 
 const pages = [
     {route: 'book', title: 'Book'},
@@ -19,28 +20,18 @@ const pages = [
     {route: 'publisher', title: 'Publisher'},
     {route: 'author', title: 'Author'},
     {route: 'book-borrowing', title: 'Book Borrowing'},
-   
 ];
-// const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
 function Navbar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
-  // const [anchorElUser, setAnchorElUser] = React.useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-  // const handleOpenUserMenu = (event) => {
-  //   setAnchorElUser(event.currentTarget);
-  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
-  // const handleCloseUserMenu = () => {
-  //   setAnchorElUser(null);
-  // };
 
   return (
     <AppBar position="static" sx={{ backgroundColor: '#4caf50' }}>
@@ -60,10 +51,9 @@ function Navbar() {
               letterSpacing: '.3rem',
               color: 'brown',
               textDecoration: 'none',
-
             }}
           >
-            LIBLARY
+            LIBRARY
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -73,7 +63,7 @@ function Navbar() {
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
-              color="brown"
+              sx={{ color: 'brown' }}
             >
               <MenuIcon />
             </IconButton>
@@ -97,9 +87,11 @@ function Navbar() {
             >
               {pages.map((page, index) => (
                 <MenuItem key={index} onClick={handleCloseNavMenu}>
-                    <Typography textAlign="center">
-                        <Link to={page.route}> {page.title} </Link>
-                    </Typography>
+                  <Typography textAlign="center" sx={{ color: 'brown' }}>
+                    <Link to={page.route} style={{ textDecoration: 'none', color: 'brown' }}> 
+                      {page.title}
+                    </Link>
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -131,41 +123,13 @@ function Navbar() {
                 sx={{ my: 2, color: 'brown', display: 'block' }}
               >
                 <Typography textAlign="center">
-                        <Link to={page.route}> {page.title} </Link>
+                  <Link to={page.route} style={{ textDecoration: 'none', color: 'brown' }}>
+                    {page.title}
+                  </Link>
                 </Typography>
               </Button>
             ))}
           </Box>
-
-          {/* <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box> */}
         </Toolbar>
       </Container>
     </AppBar>

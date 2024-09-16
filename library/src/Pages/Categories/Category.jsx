@@ -5,7 +5,6 @@ function Category() {
     const [categories, setCategories] = useState([]);
     const [update, setUpdate] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
-    const [search, setSearch] = useState('');
     const [newCategory, setNewCategory] = useState({
         name: "",
         description: "",
@@ -18,13 +17,8 @@ function Category() {
 
     useEffect(() => {
         axios
-            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", {
-                params: {
-                    page: 0, // başlangıç sayfası
-                    pageSize: 10 // sayfa boyutu
-                }
-            })
-            .then((res) => setCategories(res.data.data.items)) // items içindeki verileri alıyoruz
+            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories")
+            .then((res) => setCategories(res.data)) // response datayı direkt alıyoruz
             .catch((error) => console.error('Error fetching categories:', error))
             .finally(() => setUpdate(false));
     }, [update]);
@@ -53,7 +47,10 @@ function Category() {
 
     const handleUpdateCategory = (id) => {
         setIsUpdating(true);
-        setUpdateCategory(categories.find((cat) => cat.id === id));
+        const categoryToUpdate = categories.find((cat) => cat.id === id);
+        if (categoryToUpdate) {
+            setUpdateCategory(categoryToUpdate);
+        }
     };
 
     const handleUpdateCategoryInputChange = (e) => {
@@ -65,8 +62,9 @@ function Category() {
     };
 
     const handleUpdateCategoryBtn = () => {
+        const { id } = updateCategory;
         axios
-            .put(import.meta.env.VITE_APP_BASEURL + "api/v1/categories", updateCategory)
+            .put(import.meta.env.VITE_APP_BASEURL + `api/v1/categories/${id}`, updateCategory)
             .then(() => setUpdate(true))
             .catch((error) => console.error('Error updating category:', error))
             .finally(() => {
