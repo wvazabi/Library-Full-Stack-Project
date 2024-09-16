@@ -8,26 +8,26 @@ function Publisher() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [newPublisher, setNewPublisher] = useState({
         name: "",
-        establishmentYear: "",  // Change to year type
-        address: "",
+        establishmentYear: "",  // Change to date format (year-month-day)
     });
 
     const [updatePublisher, setUpdatePublisher] = useState({
         id: null,
         name: "",
         establishmentYear: "",
-        address: "",
     });
-
-    // Generate a list of years for the year picker
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: 50 }, (_, index) => currentYear - index);
 
     useEffect(() => {
         axios
-            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers")
-            .then((res) => setPublishers(res.data.content))
-            .then(() => setUpdate(false));
+            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers", {
+                params: {
+                    page: 0, // start page
+                    pageSize: 10 // page size
+                }
+            })
+            .then((res) => setPublishers(res.data.data.items))
+            .catch((error) => console.error('Error fetching publishers:', error))
+            .finally(() => setUpdate(false));
     }, [update]);
 
     const handleNewPublisherInputChange = (e) => {
@@ -41,17 +41,18 @@ function Publisher() {
     const handleAddNewPublisher = () => {
         axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers", newPublisher)
             .then(() => setUpdate(true))
-            .then(() => setNewPublisher({
+            .catch((error) => console.error('Error adding publisher:', error))
+            .finally(() => setNewPublisher({
                 name: "",
                 establishmentYear: "",
-                address: "",
             }));
     };
 
     const handleDeletePublisher = (id) => {
         axios
             .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/publishers/${id}`)
-            .then(() => setUpdate(true));
+            .then(() => setUpdate(true))
+            .catch((error) => console.error('Error deleting publisher:', error));
     };
 
     const handleUpdatePublisher = (id) => {
@@ -68,17 +69,14 @@ function Publisher() {
     };
 
     const handleUpdatePublisherBtn = () => {
-        const { id } = updatePublisher;
         axios
-            .put(`${import.meta.env.VITE_APP_BASEURL}api/v1/publishers/${id}`, updatePublisher)
+            .put(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers", updatePublisher)
             .then(() => setUpdate(true))
-            .then(() => setUpdatePublisher({
-                id: null,
-                name: "",
-                establishmentYear: "",
-                address: "",
-            }))
-            .then(() => setIsUpdating(false));
+            .catch((error) => console.error('Error updating publisher:', error))
+            .finally(() => {
+                setUpdatePublisher({ id: null, name: "", establishmentYear: "" });
+                setIsUpdating(false);
+            });
     };
 
     return (
@@ -92,23 +90,11 @@ function Publisher() {
                     value={newPublisher.name}
                     onChange={handleNewPublisherInputChange}
                 />
-                <select
+                <input
+                    type="date"
+                    placeholder='Establishment Year'
                     name='establishmentYear'
                     value={newPublisher.establishmentYear}
-                    onChange={handleNewPublisherInputChange}
-                >
-                    <option value="">Select Year</option>
-                    {years.map((year) => (
-                        <option key={year} value={year}>
-                            {year}
-                        </option>
-                    ))}
-                </select>
-                <input
-                    type="text"
-                    placeholder='Address'
-                    name='address'
-                    value={newPublisher.address}
                     onChange={handleNewPublisherInputChange}
                 />
                 <button onClick={handleAddNewPublisher}>Add Publisher</button>
@@ -123,23 +109,11 @@ function Publisher() {
                             value={updatePublisher.name}
                             onChange={handleUpdatePublisherInputChange}
                         />
-                        <select
+                        <input
+                            type="date"
+                            placeholder='Establishment Year'
                             name='establishmentYear'
                             value={updatePublisher.establishmentYear}
-                            onChange={handleUpdatePublisherInputChange}
-                        >
-                            <option value="">Select Year</option>
-                            {years.map((year) => (
-                                <option key={year} value={year}>
-                                    {year}
-                                </option>
-                            ))}
-                        </select>
-                        <input
-                            type="text"
-                            placeholder='Address'
-                            name='address'
-                            value={updatePublisher.address}
                             onChange={handleUpdatePublisherInputChange}
                         />
                         <button onClick={handleUpdatePublisherBtn}>Update Publisher</button>
@@ -152,7 +126,6 @@ function Publisher() {
                     <tr>
                         <th>Publisher Name</th>
                         <th>Establishment Year</th>
-                        <th>Address</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -160,8 +133,7 @@ function Publisher() {
                     {publishers.map((publisher) => (
                         <tr key={publisher.id}>
                             <td>{publisher.name}</td>
-                            <td>{publisher.establishmentYear}</td>
-                            <td>{publisher.address}</td>
+                            <td>{publisher.year}</td> {/* Change year to match API */}
                             <td>
                                 <button onClick={() => handleDeletePublisher(publisher.id)}>DELETE</button>
                                 <button onClick={() => handleUpdatePublisher(publisher.id)}>UPDATE</button>
