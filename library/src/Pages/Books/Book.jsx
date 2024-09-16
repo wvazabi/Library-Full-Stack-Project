@@ -10,23 +10,21 @@ function Book() {
   const [update, setUpdate] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [loading, setLoading] = useState(true);
-
   const [newBook, setNewBook] = useState({
     name: "",
-    publicationYear: "", // Publication year should be an integer
+    publicationYear: "",
     stock: "",
-    author: "", // This will hold the selected author ID
-    publisher: "", // This will hold the selected publisher ID
-    categories: [] // This will hold an array of selected category IDs
+    author: null,
+    publisher: null,
+    categories: []
   });
-
   const [updateBook, setUpdateBook] = useState({
     id: null,
     name: "",
     publicationYear: "",
     stock: "",
-    author: "",
-    publisher: "",
+    author: null,
+    publisher: null,
     categories: []
   });
 
@@ -38,7 +36,7 @@ function Book() {
         const authorsRes = await axios.get(import.meta.env.VITE_APP_BASEURL + "api/v1/authors");
         const publishersRes = await axios.get(import.meta.env.VITE_APP_BASEURL + "api/v1/publishers");
         const categoriesRes = await axios.get(import.meta.env.VITE_APP_BASEURL + "api/v1/categories");
-
+        
         setBooks(booksRes.data);
         setAuthors(authorsRes.data);
         setPublishers(publishersRes.data);
@@ -61,16 +59,32 @@ function Book() {
     }));
   };
 
+  const handleSelectChange = (e, field) => {
+    const { value, options } = e.target;
+    const selected = Array.from(options).filter(option => option.selected).map(option => JSON.parse(option.value));
+    setNewBook((prev) => ({
+      ...prev,
+      [field]: selected,
+    }));
+  };
+
   const handleAddNewBook = async () => {
+    const formattedBook = {
+      ...newBook,
+      author: newBook.author[0] || null, // Ensure author is an object or null
+      publisher: newBook.publisher[0] || null, // Ensure publisher is an object or null
+      categories: newBook.categories // Ensure categories is an array
+    };
+
     try {
-      await axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/books", newBook);
+      await axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/books", formattedBook);
       setUpdate(true);
       setNewBook({
         name: "",
         publicationYear: "",
         stock: "",
-        author: "",
-        publisher: "",
+        author: [],
+        publisher: [],
         categories: []
       });
     } catch (error) {
@@ -87,7 +101,7 @@ function Book() {
     }
   };
 
-  const handleUpdateBook = (id) => {
+  const handleUpdateInput = (id) => {
     setIsUpdating(true);
     const bookToUpdate = books.find((book) => book.id === id);
     if (bookToUpdate) {
@@ -104,16 +118,17 @@ function Book() {
   };
 
   const handleUpdateBookBtn = async () => {
+    const { id } = updateBook;
     try {
-      await axios.put(import.meta.env.VITE_APP_BASEURL + `api/v1/books/${updateBook.id}`, updateBook);
+      await axios.put(import.meta.env.VITE_APP_BASEURL + `api/v1/books/${id}`, updateBook);
       setUpdate(true);
       setUpdateBook({
         id: null,
         name: "",
         publicationYear: "",
         stock: "",
-        author: "",
-        publisher: "",
+        author: null,
+        publisher: null,
         categories: []
       });
       setIsUpdating(false);
@@ -143,7 +158,7 @@ function Book() {
         <h3>Add New Book</h3>
         <input
           type="text"
-          placeholder="Book Name"
+          placeholder="Name"
           name="name"
           value={newBook.name}
           onChange={handleNewBookInputChange}
@@ -162,46 +177,23 @@ function Book() {
           value={newBook.stock}
           onChange={handleNewBookInputChange}
         />
-        <select
-          name="author"
-          value={newBook.author}
-          onChange={handleNewBookInputChange}
-        >
-          <option value="">Select Author</option>
-          {authors.map((author) => (
-            <option key={author.id} value={author.id}>
+        <select multiple onChange={(e) => handleSelectChange(e, 'author')}>
+          {authors.map(author => (
+            <option key={author.id} value={JSON.stringify(author)}>
               {author.name}
             </option>
           ))}
         </select>
-        <select
-          name="publisher"
-          value={newBook.publisher}
-          onChange={handleNewBookInputChange}
-        >
-          <option value="">Select Publisher</option>
-          {publishers.map((publisher) => (
-            <option key={publisher.id} value={publisher.id}>
+        <select multiple onChange={(e) => handleSelectChange(e, 'publisher')}>
+          {publishers.map(publisher => (
+            <option key={publisher.id} value={JSON.stringify(publisher)}>
               {publisher.name}
             </option>
           ))}
         </select>
-        <select
-          multiple
-          name="categories"
-          value={newBook.categories}
-          onChange={(e) =>
-            setNewBook({
-              ...newBook,
-              categories: Array.from(
-                e.target.selectedOptions,
-                (option) => option.value
-              ),
-            })
-          }
-        >
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
+        <select multiple onChange={(e) => handleSelectChange(e, 'categories')}>
+          {categories.map(category => (
+            <option key={category.id} value={JSON.stringify(category)}>
               {category.name}
             </option>
           ))}
@@ -213,7 +205,7 @@ function Book() {
             <h4>Update Book</h4>
             <input
               type="text"
-              placeholder="Book Name"
+              placeholder="Name"
               name="name"
               value={updateBook.name}
               onChange={handleUpdateBookInputChange}
@@ -232,46 +224,23 @@ function Book() {
               value={updateBook.stock}
               onChange={handleUpdateBookInputChange}
             />
-            <select
-              name="author"
-              value={updateBook.author}
-              onChange={handleUpdateBookInputChange}
-            >
-              <option value="">Select Author</option>
-              {authors.map((author) => (
-                <option key={author.id} value={author.id}>
+            <select multiple onChange={(e) => handleSelectChange(e, 'author')}>
+              {authors.map(author => (
+                <option key={author.id} value={JSON.stringify(author)}>
                   {author.name}
                 </option>
               ))}
             </select>
-            <select
-              name="publisher"
-              value={updateBook.publisher}
-              onChange={handleUpdateBookInputChange}
-            >
-              <option value="">Select Publisher</option>
-              {publishers.map((publisher) => (
-                <option key={publisher.id} value={publisher.id}>
+            <select multiple onChange={(e) => handleSelectChange(e, 'publisher')}>
+              {publishers.map(publisher => (
+                <option key={publisher.id} value={JSON.stringify(publisher)}>
                   {publisher.name}
                 </option>
               ))}
             </select>
-            <select
-              multiple
-              name="categories"
-              value={updateBook.categories}
-              onChange={(e) =>
-                setUpdateBook({
-                  ...updateBook,
-                  categories: Array.from(
-                    e.target.selectedOptions,
-                    (option) => option.value
-                  ),
-                })
-              }
-            >
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
+            <select multiple onChange={(e) => handleSelectChange(e, 'categories')}>
+              {categories.map(category => (
+                <option key={category.id} value={JSON.stringify(category)}>
                   {category.name}
                 </option>
               ))}
@@ -281,11 +250,16 @@ function Book() {
         )}
       </div>
 
-      <h3>Book List</h3>
+      <input
+        type="text"
+        placeholder="Search by Book Name"
+        onChange={(e) => handleSearchBookByName(e.target.value)}
+      />
+
       <table>
         <thead>
           <tr>
-            <th>Name</th>
+            <th>Book Name</th>
             <th>Publication Year</th>
             <th>Stock</th>
             <th>Author</th>
@@ -300,14 +274,12 @@ function Book() {
               <td>{book.name}</td>
               <td>{book.publicationYear}</td>
               <td>{book.stock}</td>
-              <td>{book.author?.name}</td>
-              <td>{book.publisher?.name}</td>
+              <td>{book.author.name}</td>
+              <td>{book.publisher.name}</td>
+              <td>{book.categories.map(category => category.name).join(', ')}</td>
               <td>
-                {book.categories?.map((category) => category.name).join(', ')}
-              </td>
-              <td>
-                <button onClick={() => handleDeleteBook(book.id)}>Delete</button>
-                <button onClick={() => handleUpdateBook(book.id)}>Update</button>
+                <button onClick={() => handleDeleteBook(book.id)}>DELETE</button>
+                <button onClick={() => handleUpdateInput(book.id)}>UPDATE</button>
               </td>
             </tr>
           ))}
