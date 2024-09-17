@@ -13,29 +13,31 @@ function BookBorrowing() {
 
     const [newBookBorrowing, setNewBookBorrowing] = useState({
         borrowerName: "",
-        borrowerEmail: "",
+        borrowerMail: "",
         borrowingDate: "",
         returnDate: "",
-        book: ""
+        book: null // book is initially null
     });
 
     const [updateBookBorrowing, setUpdateBookBorrowing] = useState({
         id: null,
         borrowerName: "",
-        borrowerEmail: "",
+        borrowerMail: "",
         borrowingDate: "",
         returnDate: "",
-        book: ""
+        book: null // book is initially null
     });
 
     useEffect(() => {
+        // Fetch book borrowings
         axios
-            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/book-borrowings")
-            .then((res) => setBookBorrowings(res.data.content));
+            .get(import.meta.env.VITE_APP_BASEURL + "api/v1/borrows")
+            .then((res) => setBookBorrowings(res.data));
 
+        // Fetch books
         axios
             .get(import.meta.env.VITE_APP_BASEURL + "api/v1/books")
-            .then((res) => setBooks(res.data.content))
+            .then((res) => setBooks(res.data))
             .then(() => setUpdate(false));
     }, [update]);
 
@@ -49,7 +51,7 @@ function BookBorrowing() {
 
     const handleNewBookBorrowingBook = (e) => {
         const { value } = e.target;
-        const bookObj = books.find((book) => book.id == value);
+        const bookObj = books.find((book) => book.id === parseInt(value, 10));
         setNewBookBorrowing((prev) => ({
             ...prev,
             book: bookObj
@@ -58,20 +60,20 @@ function BookBorrowing() {
 
     const handleAddNewBookBorrowing = () => {
         axios
-            .post(import.meta.env.VITE_APP_BASEURL + "api/v1/book-borrowings", newBookBorrowing)
+            .post(import.meta.env.VITE_APP_BASEURL + "api/v1/borrows", newBookBorrowing)
             .then(() => setUpdate(true))
             .then(() => setNewBookBorrowing({
                 borrowerName: "",
-                borrowerEmail: "",
+                borrowerMail: "",
                 borrowingDate: "",
                 returnDate: "",
-                book: ""
+                book: null
             }));
     };
 
     const handleUpdateInput = (id) => {
         setIsUpdating(true);
-        setUpdateBookBorrowing(bookBorrowings.find((bb) => bb.id == id));
+        setUpdateBookBorrowing(bookBorrowings.find((bb) => bb.id === id));
     };
 
     const handleUpdateBookBorrowingInputChange = (e) => {
@@ -82,25 +84,34 @@ function BookBorrowing() {
         }));
     };
 
+    const handleUpdateBookBorrowingBook = (e) => {
+        const { value } = e.target;
+        const bookObj = books.find((book) => book.id === parseInt(value, 10));
+        setUpdateBookBorrowing((prev) => ({
+            ...prev,
+            book: bookObj
+        }));
+    };
+
     const handleUpdateBookBorrowingBtn = () => {
         const { id } = updateBookBorrowing;
         axios
-            .put(import.meta.env.VITE_APP_BASEURL + `api/v1/book-borrowings/${id}`, updateBookBorrowing)
+            .put(import.meta.env.VITE_APP_BASEURL + `api/v1/borrows/${id}`, updateBookBorrowing)
             .then(() => setUpdate(true))
             .then(() => setIsUpdating(false))
             .then(() => setUpdateBookBorrowing({
                 id: null,
                 borrowerName: "",
-                borrowerEmail: "",
+                borrowerMail: "",
                 borrowingDate: "",
                 returnDate: "",
-                book: ""
+                book: null
             }));
     };
 
     const handleDeleteInput = (id) => {
         axios
-            .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/book-borrowings/${id}`)
+            .delete(import.meta.env.VITE_APP_BASEURL + `api/v1/borrows/${id}`)
             .then(() => setUpdate(true));
     };
 
@@ -110,9 +121,21 @@ function BookBorrowing() {
         const finishDate = searchByDateFinishRef.current.value;
 
         axios
-            .get(import.meta.env.VITE_APP_BASEURL + `api/v1/book-borrowings/searchByBookAndDateRange?bookId=${bookId}&startDate=${startDate}&endDate=${finishDate}`)
-            .then((res) => setBookBorrowings(res.data.content));
+            .get(import.meta.env.VITE_APP_BASEURL + `api/v1/borrows/searchByBookAndDateRange?bookId=${bookId}&startDate=${startDate}&endDate=${finishDate}`)
+            .then((res) => setBookBorrowings(res.data));
     };
+
+    // Helper function to get the book title by book ID
+    const getBookTitleById = (bookId) => {
+        const book = books.find(b => b.id === bookId);
+        return book ? book.title : 'Unknown Book';
+    };
+
+    // Debugging output
+    useEffect(() => {
+        console.log("Books:", books);
+        console.log("Book Borrowings:", bookBorrowings);
+    }, [books, bookBorrowings]);
 
     return (
         <>
@@ -123,7 +146,7 @@ function BookBorrowing() {
                         <option value="">Select Book</option>
                         {books.map((book) => (
                             <option key={book.id} value={book.id}>
-                                {book.title}
+                                {book.title} {/* Display book title */}
                             </option>
                         ))}
                     </select>
@@ -151,8 +174,8 @@ function BookBorrowing() {
                 <input 
                     type="email"
                     placeholder='Borrower Email'
-                    name='borrowerEmail'
-                    value={newBookBorrowing.borrowerEmail}
+                    name='borrowerMail'
+                    value={newBookBorrowing.borrowerMail}
                     onChange={handleNewBookBorrowingInputChange}
                 />
                 <input 
@@ -169,11 +192,11 @@ function BookBorrowing() {
                     value={newBookBorrowing.returnDate}
                     onChange={handleNewBookBorrowingInputChange}
                 />
-                <select name="book" onChange={handleNewBookBorrowingBook}>
+                <select name="book" onChange={handleNewBookBorrowingBook} value={newBookBorrowing.book?.id || ""}>
                     <option value="">Select Book</option>
                     {books.map((book) => (
                         <option key={book.id} value={book.id}>
-                            {book.title}
+                            {book.title} {/* Display book title */}
                         </option>
                     ))}
                 </select>
@@ -192,8 +215,8 @@ function BookBorrowing() {
                     <input 
                         type="email"
                         placeholder='Borrower Email'
-                        name='borrowerEmail'
-                        value={updateBookBorrowing.borrowerEmail}
+                        name='borrowerMail'
+                        value={updateBookBorrowing.borrowerMail}
                         onChange={handleUpdateBookBorrowingInputChange}
                     />
                     <input 
@@ -210,11 +233,11 @@ function BookBorrowing() {
                         value={updateBookBorrowing.returnDate}
                         onChange={handleUpdateBookBorrowingInputChange}
                     />
-                    <select name="book" onChange={handleUpdateBookBorrowingInputChange} value={updateBookBorrowing.book?.id || ""}>
+                    <select name="book" onChange={handleUpdateBookBorrowingBook} value={updateBookBorrowing.book?.id || ""}>
                         <option value="">Select Book</option>
                         {books.map((book) => (
                             <option key={book.id} value={book.id}>
-                                {book.title}
+                                {book.title} {/* Display book title */}
                             </option>
                         ))}
                     </select>
@@ -230,16 +253,17 @@ function BookBorrowing() {
                         <th>Borrowing Date</th>
                         <th>Return Date</th>
                         <th>Book Title</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {bookBorrowings.map((bookBorrowing) => (
                         <tr key={bookBorrowing.id}>
                             <td>{bookBorrowing.borrowerName}</td>
-                            <td>{bookBorrowing.borrowerEmail}</td>
+                            <td>{bookBorrowing.borrowerMail}</td>
                             <td>{new Date(bookBorrowing.borrowingDate).toLocaleString()}</td>
                             <td>{new Date(bookBorrowing.returnDate).toLocaleString()}</td>
-                            <td>{bookBorrowing.book?.title}</td>
+                            <td>{getBookTitleById(bookBorrowing.book?.id)}</td> {/* Display book title based on bookId */}
                             <td>
                                 <button onClick={() => handleDeleteInput(bookBorrowing.id)}>DELETE</button>
                                 <button onClick={() => handleUpdateInput(bookBorrowing.id)}>UPDATE</button>
