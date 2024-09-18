@@ -16,7 +16,7 @@ function BookBorrowing() {
         borrowerMail: "",
         borrowingDate: "",
         returnDate: "",
-        book: null // book is initially null
+        book: null
     });
 
     const [updateBookBorrowing, setUpdateBookBorrowing] = useState({
@@ -25,7 +25,7 @@ function BookBorrowing() {
         borrowerMail: "",
         borrowingDate: "",
         returnDate: "",
-        book: null // book is initially null
+        book: null
     });
 
     useEffect(() => {
@@ -33,12 +33,17 @@ function BookBorrowing() {
         axios
             .get(import.meta.env.VITE_APP_BASEURL + "api/v1/borrows")
             .then((res) => setBookBorrowings(res.data));
-
+    
         // Fetch books
         axios
             .get(import.meta.env.VITE_APP_BASEURL + "api/v1/books")
-            .then((res) => setBooks(res.data))
-            .then(() => setUpdate(false));
+            .then((res) => {
+                setBooks(res.data);
+                console.log(res.data);  // Log the fetched books to ensure they are retrieved
+            })
+            .catch((error) => console.error("Error fetching books:", error));
+    
+        setUpdate(false);
     }, [update]);
 
     const handleNewBookBorrowingInputChange = (e) => {
@@ -128,28 +133,27 @@ function BookBorrowing() {
     // Helper function to get the book title by book ID
     const getBookTitleById = (bookId) => {
         const book = books.find(b => b.id === bookId);
-        return book ? book.title : 'Unknown Book';
+        return book ? book.name : 'Unknown Book';
     };
-
-    // Debugging output
-    useEffect(() => {
-        console.log("Books:", books);
-        console.log("Book Borrowings:", bookBorrowings);
-    }, [books, bookBorrowings]);
 
     return (
         <>
             <div className='search-bar'>
                 <div>
                     <h3>Search by Book and Date Range</h3>
-                    <select ref={searchByBookRef}>
-                        <option value="">Select Book</option>
-                        {books.map((book) => (
-                            <option key={book.id} value={book.id}>
-                                {book.title} {/* Display book title */}
-                            </option>
-                        ))}
-                    </select>
+                    <select>
+    <option value="">Select Book</option>
+    {books.length > 0 ? (
+        books.map((book) => (
+            <option key={book.id} value={book.id}>
+                {book.name}
+            </option>
+        ))
+    ) : (
+        <option disabled>Loading...</option>
+    )}
+</select>
+
                     <input 
                         type="date"
                         ref={searchByDateStartRef}
@@ -192,14 +196,19 @@ function BookBorrowing() {
                     value={newBookBorrowing.returnDate}
                     onChange={handleNewBookBorrowingInputChange}
                 />
-                <select name="book" onChange={handleNewBookBorrowingBook} value={newBookBorrowing.book?.id || ""}>
-                    <option value="">Select Book</option>
-                    {books.map((book) => (
-                        <option key={book.id} value={book.id}>
-                            {book.title} {/* Display book title */}
-                        </option>
-                    ))}
-                </select>
+               <select name="book" onChange={handleNewBookBorrowingBook} value={newBookBorrowing.book?.id || ""}>
+    <option value="">Select Book</option>
+    {books.length > 0 ? (
+        books.map((book) => (
+            <option key={book.id} value={book.id}>
+                {book.name}
+            </option>
+        ))
+    ) : (
+        <option disabled>Loading...</option>
+    )}
+</select>
+
                 <button onClick={handleAddNewBookBorrowing}>Add Book Borrowing</button>
 
                 {isUpdating &&
@@ -237,7 +246,7 @@ function BookBorrowing() {
                         <option value="">Select Book</option>
                         {books.map((book) => (
                             <option key={book.id} value={book.id}>
-                                {book.title} {/* Display book title */}
+                                {book.name}
                             </option>
                         ))}
                     </select>
@@ -252,7 +261,7 @@ function BookBorrowing() {
                         <th>Borrower Email</th>
                         <th>Borrowing Date</th>
                         <th>Return Date</th>
-                        <th>Book Title</th>
+                        <th>Book Name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -261,12 +270,12 @@ function BookBorrowing() {
                         <tr key={bookBorrowing.id}>
                             <td>{bookBorrowing.borrowerName}</td>
                             <td>{bookBorrowing.borrowerMail}</td>
-                            <td>{new Date(bookBorrowing.borrowingDate).toLocaleString()}</td>
-                            <td>{new Date(bookBorrowing.returnDate).toLocaleString()}</td>
-                            <td>{getBookTitleById(bookBorrowing.book?.id)}</td> {/* Display book title based on bookId */}
+                            <td>{bookBorrowing.borrowingDate}</td>
+                            <td>{bookBorrowing.returnDate}</td>
+                            <td>{getBookTitleById(bookBorrowing.book.id)}</td>
                             <td>
-                                <button onClick={() => handleDeleteInput(bookBorrowing.id)}>DELETE</button>
-                                <button onClick={() => handleUpdateInput(bookBorrowing.id)}>UPDATE</button>
+                                <button onClick={() => handleUpdateInput(bookBorrowing.id)}>Update</button>
+                                <button onClick={() => handleDeleteInput(bookBorrowing.id)}>Delete</button>
                             </td>
                         </tr>
                     ))}
