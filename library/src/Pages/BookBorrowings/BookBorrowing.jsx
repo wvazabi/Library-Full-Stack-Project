@@ -58,9 +58,9 @@ function BookBorrowing() {
     };
 
     const validateFields = () => {
-        const { borrowerName, borrowerMail, borrowingDate, returnDate, book } = newBookBorrowing;
+        const { borrowerName, borrowerMail, borrowingDate, book } = newBookBorrowing;
         
-        if (!borrowerName || !borrowerMail || !borrowingDate || !returnDate || !book) {
+        if (!borrowerName || !borrowerMail || !borrowingDate || !book) {
             return false;
         }
         return true;
@@ -69,13 +69,12 @@ function BookBorrowing() {
     const validateDates = (borrowingDate, returnDate) => {
         const today = new Date();
         const borrowing = new Date(borrowingDate);
-        const returnD = returnDate ? new Date(returnDate) : today;
     
         if (borrowing > today) {
             return "Borrowing date cannot be in the future.";
         }
     
-        if (returnD < borrowing) {
+        if (returnDate && new Date(returnDate) < borrowing) {
             return "Return date cannot be before borrowing date.";
         }
     
@@ -85,14 +84,11 @@ function BookBorrowing() {
     
     const handleAddNewBookBorrowing = () => {
         if (!validateFields()) {
-            setError("All fields are required");
+            setError("All fields except return date are required");
             return;
         }
     
-        // Adjusted to handle null or empty returnDate by using today's date
-        const finalReturnDate = newBookBorrowing.returnDate || new Date().toISOString().split('T')[0];
-    
-        const dateError = validateDates(newBookBorrowing.borrowingDate, finalReturnDate);
+        const dateError = validateDates(newBookBorrowing.borrowingDate, newBookBorrowing.returnDate);
         if (dateError) {
             setError(dateError);
             return;
@@ -117,11 +113,9 @@ function BookBorrowing() {
             borrowerName: newBookBorrowing.borrowerName,
             borrowerMail: newBookBorrowing.borrowerMail,
             borrowingDate: newBookBorrowing.borrowingDate,
-            returnDate: finalReturnDate, // Adjusted to handle null or empty returnDate
+            returnDate: newBookBorrowing.returnDate, // returnDate boş olabilir
             bookForBorrowingRequest: formattedBook
         };
-    
-        console.log("Payload:", payload); // Debug için ekleyin
     
         axios.post(import.meta.env.VITE_APP_BASEURL + "api/v1/borrows", payload)
             .then(() => {
@@ -181,7 +175,7 @@ function BookBorrowing() {
             borrowerName: updateBookBorrowing.borrowerName,
             borrowerMail: updateBookBorrowing.borrowerMail,
             borrowingDate: updateBookBorrowing.borrowingDate,
-            returnDate: updateBookBorrowing.returnDate, // Return date'i boş bırakmayın
+            returnDate: updateBookBorrowing.returnDate, // Return date'i boş bırakabilirsin
             bookForBorrowingRequest: formattedBook
         };
     
@@ -195,7 +189,7 @@ function BookBorrowing() {
                     borrowerName: "",
                     borrowerMail: "",
                     borrowingDate: "",
-                    returnDate: "", // returnDate'i boş olarak sıfırla
+                    returnDate: "", 
                     book: null
                 });
             })
@@ -229,28 +223,28 @@ function BookBorrowing() {
                         type="text"
                         name="borrowerName"
                         placeholder="Borrower Name"
-                        value={newBookBorrowing.borrowerName || ''} // Handle empty value
+                        value={newBookBorrowing.borrowerName || ''} 
                         onChange={handleNewBookBorrowingInputChange}
                     />
                     <input
                         type="email"
                         name="borrowerMail"
                         placeholder="Borrower Email"
-                        value={newBookBorrowing.borrowerMail || ''} // Handle empty value
+                        value={newBookBorrowing.borrowerMail || ''} 
                         onChange={handleNewBookBorrowingInputChange}
                     />
                     <input
                         type="date"
                         name="borrowingDate"
                         placeholder="Borrowing Date"
-                        value={newBookBorrowing.borrowingDate || ''} // Handle empty value
+                        value={newBookBorrowing.borrowingDate || ''} 
                         onChange={handleNewBookBorrowingInputChange}
                     />
                     <input
                         type="date"
                         name="returnDate"
                         placeholder="Return Date"
-                        value={newBookBorrowing.returnDate || ''} // Handle empty value
+                        value={newBookBorrowing.returnDate || ''} 
                         onChange={handleNewBookBorrowingInputChange}
                     />
                     <select
@@ -274,28 +268,28 @@ function BookBorrowing() {
                             type="text"
                             name="borrowerName"
                             placeholder="Borrower Name"
-                            value={updateBookBorrowing.borrowerName || ''} // Handle empty value
+                            value={updateBookBorrowing.borrowerName || ''} 
                             onChange={handleUpdateBookBorrowingInputChange}
                         />
                         <input
                             type="email"
                             name="borrowerMail"
                             placeholder="Borrower Email"
-                            value={updateBookBorrowing.borrowerMail || ''} // Handle empty value
+                            value={updateBookBorrowing.borrowerMail || ''} 
                             onChange={handleUpdateBookBorrowingInputChange}
                         />
                         <input
                             type="date"
                             name="borrowingDate"
                             placeholder="Borrowing Date"
-                            value={updateBookBorrowing.borrowingDate || ''} // Handle empty value
+                            value={updateBookBorrowing.borrowingDate || ''} 
                             onChange={handleUpdateBookBorrowingInputChange}
                         />
                         <input
                             type="date"
                             name="returnDate"
                             placeholder="Return Date"
-                            value={updateBookBorrowing.returnDate || ''} // Handle empty value
+                            value={updateBookBorrowing.returnDate || ''} 
                             onChange={handleUpdateBookBorrowingInputChange}
                         />
                         <select
