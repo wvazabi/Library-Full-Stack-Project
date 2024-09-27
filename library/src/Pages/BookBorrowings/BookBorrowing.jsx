@@ -87,10 +87,13 @@ function BookBorrowing() {
             setError("All fields except return date are required");
             return;
         }
+
+        
     
         const dateError = validateDates(newBookBorrowing.borrowingDate, newBookBorrowing.returnDate);
         if (dateError) {
             setError(dateError);
+            
             return;
         }
     
@@ -113,7 +116,7 @@ function BookBorrowing() {
             borrowerName: newBookBorrowing.borrowerName,
             borrowerMail: newBookBorrowing.borrowerMail,
             borrowingDate: newBookBorrowing.borrowingDate,
-            returnDate: newBookBorrowing.returnDate, // returnDate boş olabilir
+            returnDate: newBookBorrowing.returnDate || null, // returnDate boşsa null atanabilir
             bookForBorrowingRequest: formattedBook
         };
     
