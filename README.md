@@ -62,6 +62,10 @@ Watch the full video demonstration on YouTube:
 
 [Library Full-Stack Project Walkthrough](https://www.youtube.com/watch?v=pVPOulJausE)
 
+# **LIVE LINK** 🔴
+
+## 🔗 [👉 YOU CAN ACCESS THE LIVE LINK!](https://library-full-stack-project.vercel.app/)
+
 
 ### Code Snippets
 
