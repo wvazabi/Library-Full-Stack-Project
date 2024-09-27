@@ -28,59 +28,44 @@ This project is a Full-Stack Library Management System developed as part of the 
 
 ### Prerequisites
 
-- Node.js (for the frontend)
 - Java (JDK 11 or higher for the backend)
 - PostgreSQL
 
 ### Setting Up the Backend
 
 1. Clone the repository:
-   ```bash
+ ```
+   bash
    git clone <repository-url>
    cd backend
 
 ./mvnw spring-boot:run
-
+ ```
 
 ### Conclusion
 This project demonstrates the ability to integrate a frontend built with React and Material-UI with a backend powered by Spring Boot and PostgreSQL, allowing for efficient library management. The focus on user experience through modals and seamless navigation enhances the overall functionality of the application.
 
 ### Live Demo
-You can view the live demo of the project here: Live Demo Link
+
 
 ### GIFs and Videos
-Project Walkthrough: Link to GIF or Video
-Features Overview: Link to GIF or Video
+
+
 
 ### Code Snippets
 
 #### Main Entry Point
-
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
-import './index.css';
-import { BrowserRouter } from 'react-router-dom';
-
+ ```
 ReactDOM.createRoot(document.getElementById('root')).render(
     <BrowserRouter>
         <App />
     </BrowserRouter>    
 );
+ ```
 
 
 #### App Component
-import './App.css';
-import { Routes, Route } from "react-router-dom";
-import Author from './Pages/Authors/Author';
-import Book from './Pages/Books/Book';
-import Navbar from './components/Navbar';
-import BookBorrowing from './Pages/BookBorrowings/BookBorrowing';
-import Publisher from './Pages/Publishers/Publisher';
-import Category from './Pages/Categories/Category';
-import HomePage from './Pages/HomePage/HomePage';
-import { useState } from 'react';
-
+ ```
 function App() {
   const [homePage, setHomePage] = useState(true);
 
@@ -102,10 +87,10 @@ function App() {
 }
 
 export default App;
-
+ ```
 
 #### Home Page Component
-
+ ```
 import { useNavigate } from 'react-router-dom';
 import './HomePage.css';
 
@@ -136,9 +121,8 @@ function HomePage() {
 }
 
 export default HomePage;
+ ```
 
 
-
-
-Feel free to modify or add to this as you see fit!
+ ``` Feel free to modify or add to this as you see fit!  ```
 
