@@ -44,14 +44,23 @@ This project is a Full-Stack Library Management System developed as part of the 
 ./mvnw spring-boot:run
  ```
 
-### Conclusion
-This project demonstrates the ability to integrate a frontend built with React and Material-UI with a backend powered by Spring Boot and PostgreSQL, allowing for efficient library management. The focus on user experience through modals and seamless navigation enhances the overall functionality of the application.
+### Gifs
+- **Author Management**: Add, update, and delete authors in the system.
+![Author Management](./gifs/Author%20Gif.gif)
 
-### Live Demo
+- **Category Management**: Manage book categories with ease.
+![Category Management](./gifs/Category%20Gif.gif)
 
+- **Book Management**: Perform CRUD operations on books.
+![Book Management](./gifs/book_gif.gif)
 
-### GIFs and Videos
+- **Borrowing Management**: Keep track of borrowed books.
+![Borrowing Management](./gifs/borrow_gif.gif)
 
+### Video Walkthrough
+Watch the full video demonstration on YouTube:
+
+[Library Full-Stack Project Walkthrough](https://www.youtube.com/watch?v=pVPOulJausE)
 
 
 ### Code Snippets
@@ -124,6 +133,11 @@ function HomePage() {
 
 export default HomePage;
  ```
+
+
+### Conclusion
+This project demonstrates the ability to integrate a frontend built with React and Material-UI with a backend powered by Spring Boot and PostgreSQL, allowing for efficient library management. The focus on user experience through modals and seamless navigation enhances the overall functionality of the application.
+
 
 
  ``` Feel free to modify or add to this as you see fit!  ```
