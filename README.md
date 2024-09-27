@@ -10,6 +10,8 @@ This project is a Full-Stack Library Management System developed as part of the 
 - **CRUD Operations**: Users can perform Create, Read, Update, and Delete operations for Publishers, Categories, Books, Authors, and Book Borrowings.
 - **User Notifications**: Inform users of operation failures using modals instead of window alerts.
 - **Responsive Design**: The application is designed to be user-friendly and visually appealing.
+- **Error Handling**: Displays error messages when attempting to borrow or return books for a date that is either in the future or before the borrowing date, utilizing the error modal feature to enhance user experience.
+
 
 ## Technologies Used
 
